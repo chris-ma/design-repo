@@ -1,6 +1,6 @@
 # Design Inspiration Dashboard
 
-Paste a Dribbble, Pinterest, Awwwards, or any other design URL and get back a screenshot, AI-generated tags, a dominant color palette, and a ready-to-paste prompt for recreating that look and feel with an AI coding tool.
+Paste a Dribbble, Pinterest, Awwwards, or any other design URL — or upload a screenshot/image directly — and get back a screenshot, AI-generated tags, a dominant color palette, and a ready-to-paste prompt for recreating that look and feel with an AI coding tool.
 
 ## Stack
 
@@ -53,11 +53,15 @@ Pinterest and similar sites may require login or serve a stripped-down page to a
 
 ## How it works
 
+**From a URL:**
 1. You paste a URL into the dashboard.
 2. The server launches headless Chromium, navigates to the page, scrolls to trigger lazy-loaded images, and takes a screenshot.
 3. The screenshot is sent to Claude, which returns a title, tags, a dominant color palette, and a replication prompt as structured JSON.
 4. The screenshot is uploaded to Appwrite Storage; the item (with tags/prompt) is saved to Appwrite Database. If the AI step fails, the screenshot is still saved so nothing is lost — the item is created with empty tags/prompt and a warning is returned.
-5. The dashboard grid lets you filter by tag/platform and search by title; the detail view shows the full screenshot, tags, and a copyable replication prompt.
+
+**From an uploaded image:** same as above, but skips the Chromium/screenshot step entirely — the uploaded PNG/JPEG (max 4MB, to stay under Vercel's serverless request body limit) goes straight to Claude for analysis. You can optionally attach a source link for attribution; without one, the item shows as "Uploaded" with no source URL.
+
+The dashboard list lets you filter by tag/platform and search by title; the detail view shows the full screenshot, tags, and a copyable replication prompt.
 
 ## Project structure
 
@@ -67,7 +71,7 @@ src/app/page.tsx                 # dashboard grid + Add affordance
 src/app/items/[id]/page.tsx      # item detail view
 src/app/api/items/route.ts       # GET list+filter, POST create
 src/app/api/items/[id]/route.ts  # GET single, DELETE
-src/components/                  # ItemCard, ItemGrid, AddItemModal, TagFilterBar, CopyButton, DeleteItemButton
+src/components/                  # ItemList, ItemRow, AddItemModal, TagFilterBar, CopyButton, DeleteItemButton
 src/lib/appwrite/                # Appwrite client + config (lazy-constructed, no secrets needed at build time)
 src/lib/screenshot.ts            # Playwright capture
 src/lib/ai.ts                    # Claude vision analysis

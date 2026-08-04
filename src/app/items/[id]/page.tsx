@@ -46,14 +46,18 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</h1>
-          <a
-            href={item.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
-          >
-            {item.sourceUrl}
-          </a>
+          {item.sourceUrl ? (
+            <a
+              href={item.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+            >
+              {item.sourceUrl}
+            </a>
+          ) : (
+            <p className="text-sm text-zinc-400 dark:text-zinc-500">Uploaded image</p>
+          )}
         </div>
         <DeleteItemButton id={item.id} />
       </div>

@@ -38,7 +38,7 @@ export function ItemRow({ item }: { item: DesignItem }) {
             <span
               className={`rounded-full px-2 py-0.5 font-medium capitalize ${PLATFORM_STYLES[item.sourcePlatform] ?? PLATFORM_STYLES.other}`}
             >
-              {item.sourcePlatform}
+              {item.sourceUrl ? item.sourcePlatform : "uploaded"}
             </span>
             <span>{createdDate}</span>
           </div>

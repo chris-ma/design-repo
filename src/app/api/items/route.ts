@@ -6,10 +6,17 @@ import { appwriteConfig } from "@/lib/appwrite/config";
 import { analyzeScreenshot } from "@/lib/ai";
 import { deriveSourcePlatform, InvalidUrlError, mapDocumentToItem, validateSourceUrl, type ItemDocument } from "@/lib/items";
 import { captureScreenshot } from "@/lib/screenshot";
-import type { CreateItemResponse } from "@/types/item";
+import type { CreateItemResponse, SourcePlatform } from "@/types/item";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+const ALLOWED_UPLOAD_TYPES: Record<string, "image/png" | "image/jpeg"> = {
+  "image/png": "image/png",
+  "image/jpeg": "image/jpeg",
+  "image/jpg": "image/jpeg",
+};
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // stays under Vercel's serverless request body limit
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -33,6 +40,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const contentType = request.headers.get("content-type") || "";
+  if (contentType.includes("multipart/form-data")) {
+    return handleImageUpload(request);
+  }
+  return handleUrlSubmission(request);
+}
+
+async function handleUrlSubmission(request: NextRequest) {
   let body: unknown;
   try {
     body = await request.json();
@@ -68,21 +83,99 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  return createItemRecord({
+    screenshot: capture.screenshot,
+    mediaType: "image/png",
+    filename: "screenshot.png",
+    sourceUrl: url.toString(),
+    sourcePlatform,
+    pageTitle: capture.pageTitle,
+    pageDescription: capture.pageDescription,
+  });
+}
+
+async function handleImageUpload(request: NextRequest) {
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json({ error: "Could not read the uploaded form data." }, { status: 400 });
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return NextResponse.json({ error: "An image file is required." }, { status: 400 });
+  }
+
+  const mediaType = ALLOWED_UPLOAD_TYPES[file.type];
+  if (!mediaType) {
+    return NextResponse.json({ error: "Only PNG and JPEG images are supported." }, { status: 400 });
+  }
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return NextResponse.json({ error: "Image is too large (max 4MB)." }, { status: 400 });
+  }
+
+  let sourceUrl = "";
+  let sourcePlatform: SourcePlatform = "other";
+  const rawSourceUrl = formData.get("sourceUrl");
+  if (typeof rawSourceUrl === "string" && rawSourceUrl.trim().length > 0) {
+    try {
+      const url = validateSourceUrl(rawSourceUrl);
+      sourceUrl = url.toString();
+      sourcePlatform = deriveSourcePlatform(url);
+    } catch (error) {
+      if (error instanceof InvalidUrlError) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+      throw error;
+    }
+  }
+
+  const screenshot = Buffer.from(await file.arrayBuffer());
+  const filename = mediaType === "image/png" ? "upload.png" : "upload.jpg";
+
+  return createItemRecord({
+    screenshot,
+    mediaType,
+    filename,
+    sourceUrl,
+    sourcePlatform,
+  });
+}
+
+async function createItemRecord({
+  screenshot,
+  mediaType,
+  filename,
+  sourceUrl,
+  sourcePlatform,
+  pageTitle,
+  pageDescription,
+}: {
+  screenshot: Buffer;
+  mediaType: "image/png" | "image/jpeg";
+  filename: string;
+  sourceUrl: string;
+  sourcePlatform: SourcePlatform;
+  pageTitle?: string;
+  pageDescription?: string;
+}) {
   let analysis;
   let warning: string | undefined;
   try {
     analysis = await analyzeScreenshot({
-      imageBase64: capture.screenshot.toString("base64"),
-      mediaType: "image/png",
-      pageTitle: capture.pageTitle,
-      pageDescription: capture.pageDescription,
-      sourceUrl: url.toString(),
+      imageBase64: screenshot.toString("base64"),
+      mediaType,
+      pageTitle,
+      pageDescription,
+      sourceUrl: sourceUrl || undefined,
     });
   } catch (error) {
     console.error("AI analysis failed", error);
     warning = "Screenshot saved, but AI tagging/prompt generation failed. You can retry analysis later.";
     analysis = {
-      title: capture.pageTitle,
+      title: pageTitle || "Untitled inspiration",
       tags: [] as string[],
       colorPalette: [] as string[],
       replicationPrompt: "",
@@ -93,7 +186,7 @@ export async function POST(request: NextRequest) {
   const uploadedFile = await storage.createFile(
     appwriteConfig.screenshotsBucketId,
     ID.unique(),
-    InputFile.fromBuffer(capture.screenshot, "screenshot.png"),
+    InputFile.fromBuffer(screenshot, filename),
   );
 
   const now = new Date().toISOString();
@@ -102,9 +195,9 @@ export async function POST(request: NextRequest) {
     appwriteConfig.itemsCollectionId,
     ID.unique(),
     {
-      source_url: url.toString(),
+      source_url: sourceUrl,
       source_platform: sourcePlatform,
-      title: analysis.title || capture.pageTitle,
+      title: analysis.title || pageTitle || "Untitled inspiration",
       screenshot_file_id: uploadedFile.$id,
       tags: analysis.tags,
       replication_prompt: analysis.replicationPrompt,

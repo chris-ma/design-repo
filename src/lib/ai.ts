@@ -43,7 +43,7 @@ interface AnalyzeScreenshotInput {
   mediaType: "image/png" | "image/jpeg";
   pageTitle?: string;
   pageDescription?: string;
-  sourceUrl: string;
+  sourceUrl?: string;
 }
 
 export async function analyzeScreenshot({
@@ -56,7 +56,7 @@ export async function analyzeScreenshot({
   const client = getAnthropicClient();
 
   const contextLines = [
-    `Source URL: ${sourceUrl}`,
+    sourceUrl ? `Source URL: ${sourceUrl}` : "Source: user-uploaded image (no source URL)",
     pageTitle ? `Page title: ${pageTitle}` : null,
     pageDescription ? `Page description: ${pageDescription}` : null,
   ].filter(Boolean);
