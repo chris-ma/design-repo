@@ -1,7 +1,7 @@
 import type { DesignItem } from "@/types/item";
-import { ItemCard } from "./ItemCard";
+import { ItemRow } from "./ItemRow";
 
-export function ItemGrid({ items }: { items: DesignItem[] }) {
+export function ItemList({ items }: { items: DesignItem[] }) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-300 py-24 text-center dark:border-zinc-700">
@@ -12,9 +12,9 @@ export function ItemGrid({ items }: { items: DesignItem[] }) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-4">
       {items.map((item) => (
-        <ItemCard key={item.id} item={item} />
+        <ItemRow key={item.id} item={item} />
       ))}
     </div>
   );

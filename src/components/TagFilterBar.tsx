@@ -28,19 +28,19 @@ export function TagFilterBar({
   onQueryChange: (query: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="flex w-full flex-col items-center gap-4">
+      <div className="flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <input
           type="search"
           placeholder="Search title or tags…"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          className="w-full max-w-xs rounded-md border border-zinc-300 px-3 py-1.5 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+          className="w-full max-w-lg rounded-full border border-zinc-300 bg-white px-5 py-3 text-base shadow-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
         />
         <select
           value={platform}
           onChange={(event) => onPlatformChange(event.target.value as SourcePlatform | "all")}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+          className="rounded-full border border-zinc-300 bg-white px-4 py-3 text-sm shadow-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
         >
           {PLATFORMS.map((p) => (
             <option key={p.value} value={p.value}>
@@ -50,7 +50,7 @@ export function TagFilterBar({
         </select>
       </div>
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap justify-center gap-1.5">
           {tags.map((tag) => {
             const active = selectedTags.includes(tag);
             return (
@@ -61,7 +61,7 @@ export function TagFilterBar({
                 className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                   active
                     ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                    : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                    : "bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                 }`}
               >
                 {tag}

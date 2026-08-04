@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AddItemModal } from "@/components/AddItemModal";
-import { ItemGrid } from "@/components/ItemGrid";
+import { ItemList } from "@/components/ItemList";
 import { TagFilterBar } from "@/components/TagFilterBar";
 import type { DesignItem, SourcePlatform } from "@/types/item";
 
@@ -64,39 +64,42 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Design Inspiration</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Screenshots, tags, and replication prompts for your next project.
-          </p>
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
+      <section className="rounded-2xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-white px-6 py-14 text-center dark:border-zinc-800 dark:from-zinc-900 dark:to-zinc-950 sm:px-12">
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+          Design Inspiration
+        </h1>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
+          Screenshots, tags, and replication prompts for your next project.
+        </p>
+
+        <div className="mx-auto mt-8 max-w-2xl">
+          <TagFilterBar
+            tags={availableTags}
+            selectedTags={selectedTags}
+            onToggleTag={toggleTag}
+            platform={platform}
+            onPlatformChange={setPlatform}
+            query={query}
+            onQueryChange={setQuery}
+          />
         </div>
+
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="shrink-0 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="mt-8 rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
         >
           + Add inspiration
         </button>
-      </div>
-
-      <TagFilterBar
-        tags={availableTags}
-        selectedTags={selectedTags}
-        onToggleTag={toggleTag}
-        platform={platform}
-        onPlatformChange={setPlatform}
-        query={query}
-        onQueryChange={setQuery}
-      />
+      </section>
 
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {loading ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading…</p>
       ) : (
-        <ItemGrid items={visibleItems} />
+        <ItemList items={visibleItems} />
       )}
 
       <AddItemModal
