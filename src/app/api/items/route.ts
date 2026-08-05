@@ -176,6 +176,7 @@ async function createItemRecord({
     warning = "Screenshot saved, but AI tagging/prompt generation failed. You can retry analysis later.";
     analysis = {
       title: pageTitle || "Untitled inspiration",
+      description: "",
       tags: [] as string[],
       colorPalette: [] as string[],
       replicationPrompt: "",
@@ -198,6 +199,7 @@ async function createItemRecord({
       source_url: sourceUrl,
       source_platform: sourcePlatform,
       title: analysis.title || pageTitle || "Untitled inspiration",
+      description: analysis.description,
       screenshot_file_id: uploadedFile.$id,
       tags: analysis.tags,
       replication_prompt: analysis.replicationPrompt,

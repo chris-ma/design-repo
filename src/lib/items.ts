@@ -46,6 +46,7 @@ export interface ItemDocument extends Models.Document {
   source_url: string;
   source_platform: SourcePlatform;
   title: string;
+  description: string;
   screenshot_file_id: string;
   tags: string[];
   replication_prompt: string;
@@ -59,6 +60,7 @@ export function mapDocumentToItem(doc: ItemDocument): DesignItem {
     sourceUrl: doc.source_url,
     sourcePlatform: doc.source_platform,
     title: doc.title,
+    description: doc.description ?? "",
     screenshotFileId: doc.screenshot_file_id,
     screenshotUrl: getScreenshotViewUrl(doc.screenshot_file_id),
     tags: doc.tags ?? [],

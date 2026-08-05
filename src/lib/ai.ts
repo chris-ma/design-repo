@@ -5,6 +5,11 @@ import type { AnalysisResult } from "@/types/item";
 
 const analysisSchema = z.object({
   title: z.string().describe("A short, descriptive title for the design (max ~8 words)"),
+  description: z
+    .string()
+    .describe(
+      "An in-depth critical description of the page's visual design, written in the register of a design/art-history critique for a university-level audience — dense with precise technical vocabulary drawn from typography, visual art, and design theory (e.g. typographic hierarchy, visual rhythm, negative space, chromatic contrast, compositional balance, grid structure, kerning, leading, gestalt grouping, visual weight, focal point, iconography). 4-6 sentences analyzing composition/layout, typographic treatment, color and imagery, and overall mood as a designed artifact. Write as formal critique, never as marketing copy, and never reference the site's industry, product, or subject matter — describe only how it is designed, not what it sells.",
+    ),
   tags: z
     .array(z.string())
     .describe(
@@ -75,11 +80,12 @@ export async function analyzeScreenshot({
           {
             type: "text",
             text: [
-              "You are analyzing a screenshot of a website/design shot collected as design inspiration.",
+              "You are a design critic analyzing a screenshot of a website/design shot collected as design inspiration.",
               contextLines.join("\n"),
               "",
-              "Analyze the visual design in the screenshot and produce a title, tags, dominant color palette, and a replication prompt suitable for pasting directly into an AI coding tool to rebuild a similar look and feel.",
+              "Analyze the visual design in the screenshot and produce a title, an in-depth critical description, tags, dominant color palette, and a replication prompt suitable for pasting directly into an AI coding tool to rebuild a similar look and feel.",
               "Focus entirely on transferable visual design language — layout, typography, color, imagery style, spacing, mood — not on the industry, product, or subject matter of the original site. The goal is a reusable style reference, not a description of what the site is about.",
+              "For the description field specifically, write with the precision and vocabulary of a graduate-level design or art-history critique — the kind of formal, technical language used to analyze a designed artifact, not casual or promotional language.",
             ].join("\n"),
           },
         ],

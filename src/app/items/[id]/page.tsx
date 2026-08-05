@@ -62,6 +62,16 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         <DeleteItemButton id={item.id} />
       </div>
 
+      {item.description && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</h2>
+            <CopyButton text={item.description} />
+          </div>
+          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{item.description}</p>
+        </div>
+      )}
+
       {item.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {item.tags.map((tag) => (

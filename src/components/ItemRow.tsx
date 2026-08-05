@@ -11,12 +11,6 @@ const PLATFORM_STYLES: Record<string, string> = {
 };
 
 export function ItemRow({ item }: { item: DesignItem }) {
-  const createdDate = new Date(item.createdAt).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-
   return (
     <Link
       href={`/items/${item.id}`}
@@ -41,9 +35,15 @@ export function ItemRow({ item }: { item: DesignItem }) {
             >
               {item.sourceUrl ? item.sourcePlatform : "uploaded"}
             </span>
-            <span>{createdDate}</span>
           </div>
         </div>
+
+        {item.description && (
+          <div className="flex items-start justify-between gap-3">
+            <p className="line-clamp-3 text-sm text-zinc-600 dark:text-zinc-300">{item.description}</p>
+            <CopyButton text={item.description} label="Copy" />
+          </div>
+        )}
 
         {item.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">

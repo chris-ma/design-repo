@@ -5,6 +5,7 @@ export interface DesignItem {
   sourceUrl: string;
   sourcePlatform: SourcePlatform;
   title: string;
+  description: string;
   screenshotFileId: string;
   screenshotUrl: string;
   tags: string[];
@@ -24,6 +25,7 @@ export interface CreateItemResponse {
 
 export interface AnalysisResult {
   title: string;
+  description: string;
   tags: string[];
   colorPalette: string[];
   replicationPrompt: string;

@@ -99,6 +99,10 @@ async function main() {
     },
     { key: "title", create: () => databases.createStringAttribute(DATABASE_ID, COLLECTION_ID, "title", 300, true) },
     {
+      key: "description",
+      create: () => databases.createStringAttribute(DATABASE_ID, COLLECTION_ID, "description", 5000, false),
+    },
+    {
       key: "screenshot_file_id",
       create: () => databases.createStringAttribute(DATABASE_ID, COLLECTION_ID, "screenshot_file_id", 100, true),
     },
