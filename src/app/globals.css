@@ -1,28 +1,79 @@
 @import "tailwindcss";
 
+/*
+ * Warm archival palette. A design reference tool should read as an editorial
+ * archive, not a SaaS dashboard: paper-toned neutrals, ink-black type, and a
+ * single restrained accent so the saved screenshots stay the loudest thing
+ * on the page.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #faf9f7;
+  --surface: #ffffff;
+  --surface-sunken: #f2f0ec;
+  --ink: #14120f;
+  --ink-soft: #5c574f;
+  --ink-faint: #78716a;
+  --line: #e7e3dc;
+  --line-strong: #d4cfc6;
+  --accent: #b3541e;
+  --accent-contrast: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0d0d0c;
+    --surface: #161614;
+    --surface-sunken: #100f0e;
+    --ink: #f4f1ec;
+    --ink-soft: #a8a29a;
+    --ink-faint: #7a746c;
+    --line: #2a2825;
+    --line-strong: #3a3733;
+    --accent: #e07a45;
+    --accent-contrast: #16120e;
   }
 }
 
+/*
+ * `inline` keeps the generated utilities pointing at the custom properties
+ * above, so every color swaps with the media query without needing a `dark:`
+ * variant on each element.
+ */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * Tracked-out mono caps used for section labels and metadata. Declared inside
+ * the components layer so per-element Tailwind utilities still win over it.
+ */
+@layer components {
+  .label {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
 }
 
 @keyframes progress-indeterminate {

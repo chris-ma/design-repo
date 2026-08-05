@@ -26,81 +26,99 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
     throw error;
   }
 
+  const notes = [item.description, item.replicationPrompt].filter(Boolean).join("\n\n");
+
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-10">
-      <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">
-        ← Back to dashboard
-      </Link>
+    <>
+      <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-4">
+          <Link href="/" className="label transition-colors hover:text-ink">
+            ← Archive
+          </Link>
+          <DeleteItemButton id={item.id} />
+        </div>
+      </header>
 
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-        <Image
-          src={item.screenshotUrl}
-          alt={item.title}
-          fill
-          sizes="100vw"
-          className="object-cover object-top"
-          unoptimized
-        />
-      </div>
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-6 pb-24 pt-12">
         <div>
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</h1>
-          {item.sourceUrl ? (
+          <span className="label">{item.sourceUrl ? item.sourcePlatform : "uploaded"}</span>
+          <h1 className="mt-3 max-w-2xl font-display text-4xl leading-[1.1] text-ink sm:text-5xl">
+            {item.title}
+          </h1>
+          {item.sourceUrl && (
             <a
               href={item.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+              className="mt-4 inline-block max-w-full truncate border-b border-line-strong pb-0.5 text-sm text-ink-soft transition-colors hover:border-accent hover:text-accent"
             >
               {item.sourceUrl}
             </a>
-          ) : (
-            <p className="text-sm text-zinc-400 dark:text-zinc-500">Uploaded image</p>
           )}
         </div>
-        <DeleteItemButton id={item.id} />
-      </div>
 
-      {item.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {item.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-            >
-              {tag}
-            </span>
-          ))}
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm bg-sunken ring-1 ring-line">
+          <Image
+            src={item.screenshotUrl}
+            alt={item.title}
+            fill
+            sizes="(min-width: 1024px) 896px, 100vw"
+            className="object-cover object-top"
+            unoptimized
+          />
         </div>
-      )}
 
-      {item.colorPalette.length > 0 && (
-        <div className="flex items-center gap-2">
-          {item.colorPalette.map((color) => (
-            <div key={color} className="flex flex-col items-center gap-1">
-              <div
-                className="h-8 w-8 rounded-full border border-zinc-200 dark:border-zinc-700"
-                style={{ backgroundColor: color }}
-              />
-              <span className="text-xs text-zinc-400">{color}</span>
+        <div className="grid gap-10 border-t border-line pt-10 lg:grid-cols-[1fr_220px] lg:gap-14">
+          <section className="flex min-w-0 flex-col gap-4">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="label">Design notes</h2>
+              <CopyButton text={notes} label="Copy notes" />
             </div>
-          ))}
-        </div>
-      )}
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Design notes</h2>
-          <CopyButton text={[item.description, item.replicationPrompt].filter(Boolean).join("\n\n")} />
+            {item.description && (
+              <p className="max-w-prose text-[0.9375rem] leading-[1.7] text-ink-soft">
+                {item.description}
+              </p>
+            )}
+
+            <pre className="mt-1 max-h-96 overflow-auto whitespace-pre-wrap rounded-sm bg-sunken p-5 font-mono text-[0.8125rem] leading-relaxed text-ink ring-1 ring-line">
+              {item.replicationPrompt || "No prompt generated yet."}
+            </pre>
+          </section>
+
+          <aside className="flex flex-col gap-8">
+            {item.tags.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="label">Design language</h2>
+                <ul className="flex flex-col gap-1.5">
+                  {item.tags.map((tag) => (
+                    <li key={tag} className="text-sm text-ink-soft">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {item.colorPalette.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="label">Palette</h2>
+                <ul className="flex flex-col gap-2">
+                  {item.colorPalette.map((color) => (
+                    <li key={color} className="flex items-center gap-3">
+                      <span
+                        className="h-6 w-6 shrink-0 rounded-sm ring-1 ring-line"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className="font-mono text-xs uppercase text-ink-soft">{color}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </aside>
         </div>
-        {item.description && (
-          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{item.description}</p>
-        )}
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-zinc-100 p-4 font-mono text-sm text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
-          {item.replicationPrompt || "No prompt generated yet."}
-        </pre>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

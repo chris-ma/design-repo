@@ -4,18 +4,21 @@ import { ItemRow } from "./ItemRow";
 export function ItemList({ items }: { items: DesignItem[] }) {
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-300 py-24 text-center dark:border-zinc-700">
-        <p className="text-zinc-500 dark:text-zinc-400">No inspiration saved yet.</p>
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">Paste a Dribbble, Pinterest, or Awwwards link to get started.</p>
+      <div className="flex flex-col items-center gap-3 border-y border-line py-28 text-center">
+        <p className="font-display text-2xl text-ink">Nothing filed yet</p>
+        <p className="max-w-xs text-sm leading-relaxed text-ink-soft">
+          Paste a link to a site you admire, or upload a screenshot. Everything else gets written
+          for you.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {items.map((item) => (
-        <ItemRow key={item.id} item={item} />
+    <ul className="divide-y divide-line border-y border-line">
+      {items.map((item, index) => (
+        <ItemRow key={item.id} item={item} index={index} />
       ))}
-    </div>
+    </ul>
   );
 }

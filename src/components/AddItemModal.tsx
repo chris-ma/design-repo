@@ -94,117 +94,122 @@ export function AddItemModal({
     }
   }
 
+  const tabClass = (active: boolean) =>
+    `-mb-px border-b-2 pb-3 font-mono text-[0.6875rem] uppercase tracking-[0.12em] transition-colors ${
+      active ? "border-ink text-ink" : "border-transparent text-ink-faint hover:text-ink-soft"
+    }`;
+
+  const fieldClass =
+    "w-full border-b border-line-strong bg-transparent pb-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink disabled:opacity-50";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-zinc-900">
-        <h2 className="mb-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">Add inspiration</h2>
-        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
-          Paste a URL, or upload one or more screenshots/images directly.
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+      <div className="w-full max-w-lg rounded-t-lg border border-line bg-surface p-7 shadow-[0_24px_60px_-16px_rgb(0_0_0/0.28)] sm:rounded-sm sm:p-9">
+        <h2 className="font-display text-3xl leading-tight text-ink">Add a reference</h2>
+        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+          Paste a link, or upload screenshots you&rsquo;ve already collected.
         </p>
 
-        <div className="mb-4 flex gap-1 rounded-md bg-zinc-100 p-1 dark:bg-zinc-800">
-          <button
-            type="button"
-            onClick={() => setMode("url")}
-            className={`flex-1 rounded px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === "url"
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
-                : "text-zinc-500 dark:text-zinc-400"
-            }`}
-          >
+        <div className="mt-7 flex gap-7 border-b border-line">
+          <button type="button" onClick={() => setMode("url")} className={tabClass(mode === "url")}>
             Paste URL
           </button>
           <button
             type="button"
             onClick={() => setMode("upload")}
-            className={`flex-1 rounded px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === "upload"
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
-                : "text-zinc-500 dark:text-zinc-400"
-            }`}
+            className={tabClass(mode === "upload")}
           >
-            Upload image
+            Upload images
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-6">
           {mode === "url" ? (
             <input
               type="url"
               required
               autoFocus
-              placeholder="https://dribbble.com/shots/..."
+              placeholder="https://dribbble.com/shots/…"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
               disabled={loading}
-              className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+              className={fieldClass}
             />
           ) : (
             <>
-              <input
-                type="file"
-                required
-                multiple
-                accept="image/png,image/jpeg"
-                onChange={(event) => setFiles(event.target.files ? Array.from(event.target.files) : [])}
-                disabled={loading}
-                className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none file:mr-3 file:rounded file:border-0 file:bg-zinc-100 file:px-2 file:py-1 file:text-sm file:font-medium disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:file:bg-zinc-700"
-              />
-              {files.length > 0 && (
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {files.length} image{files.length > 1 ? "s" : ""} selected
-                </p>
-              )}
+              <div className="flex flex-col gap-2">
+                <input
+                  type="file"
+                  required
+                  multiple
+                  accept="image/png,image/jpeg"
+                  onChange={(event) => setFiles(event.target.files ? Array.from(event.target.files) : [])}
+                  disabled={loading}
+                  className="w-full text-sm text-ink-soft file:mr-4 file:rounded-full file:border file:border-line-strong file:bg-transparent file:px-3 file:py-1.5 file:font-mono file:text-[0.6875rem] file:uppercase file:tracking-[0.1em] file:text-ink file:transition-colors hover:file:border-ink disabled:opacity-50"
+                />
+                {files.length > 0 && (
+                  <span className="label">
+                    {files.length} image{files.length > 1 ? "s" : ""} selected
+                  </span>
+                )}
+              </div>
               <input
                 type="url"
                 placeholder="Source link (optional)"
                 value={uploadSourceUrl}
                 onChange={(event) => setUploadSourceUrl(event.target.value)}
                 disabled={loading}
-                className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                className={fieldClass}
               />
             </>
           )}
-          {error && <p className="whitespace-pre-line text-sm text-red-600 dark:text-red-400">{error}</p>}
+
+          {error && (
+            <p className="whitespace-pre-line border-l-2 border-accent pl-3 text-sm leading-relaxed text-ink-soft">
+              {error}
+            </p>
+          )}
+
           {loading && (
-            <div className="flex flex-col gap-1.5">
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <div className="flex flex-col gap-2">
+              <span className="label">
                 {mode === "url"
-                  ? "Rendering page and analyzing with Claude — this can take up to a minute…"
+                  ? "Rendering page and analysing — up to a minute"
                   : progress
-                    ? `Analyzing ${progress.current} of ${progress.total} with Claude…`
-                    : "Analyzing with Claude…"}
-              </p>
-              <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+                    ? `Analysing ${progress.current} of ${progress.total}`
+                    : "Analysing"}
+              </span>
+              <div className="relative h-px w-full overflow-hidden bg-line">
                 {progress && progress.total > 1 ? (
                   <div
-                    className="h-full rounded-full bg-zinc-900 transition-[width] duration-300 dark:bg-zinc-100"
+                    className="h-full bg-accent transition-[width] duration-300"
                     style={{ width: `${((progress.current - 1) / progress.total) * 100}%` }}
                   />
                 ) : (
                   <div
-                    className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-zinc-900 dark:bg-zinc-100"
+                    className="absolute inset-y-0 left-0 w-1/3 bg-accent"
                     style={{ animation: "progress-indeterminate 1.2s ease-in-out infinite" }}
                   />
                 )}
               </div>
             </div>
           )}
-          <div className="mt-2 flex justify-end gap-2">
+
+          <div className="mt-1 flex items-center justify-end gap-5">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 disabled:opacity-60 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="label transition-colors hover:text-ink disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? (progress ? `Adding ${progress.current}/${progress.total}…` : "Adding…") : "Add"}
+              {loading ? (progress ? `Adding ${progress.current}/${progress.total}` : "Adding…") : "Add"}
             </button>
           </div>
         </form>

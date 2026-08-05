@@ -8,7 +8,7 @@ export function DeleteItemButton({ id }: { id: string }) {
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Delete this item? This cannot be undone.")) return;
+    if (!confirm("Delete this reference? This cannot be undone.")) return;
     setDeleting(true);
     try {
       const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
@@ -26,7 +26,7 @@ export function DeleteItemButton({ id }: { id: string }) {
       type="button"
       onClick={handleDelete}
       disabled={deleting}
-      className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+      className="shrink-0 rounded-full border border-line-strong px-3 py-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-ink-faint transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
     >
       {deleting ? "Deleting…" : "Delete"}
     </button>

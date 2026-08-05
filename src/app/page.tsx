@@ -61,48 +61,93 @@ export default function Home() {
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
   }
 
-  return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
-      <section className="rounded-2xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-white px-6 py-14 text-center dark:border-zinc-800 dark:from-zinc-900 dark:to-zinc-950 sm:px-12">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          Design Inspiration
-        </h1>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
-          Screenshots, tags, and replication prompts for your next project.
-        </p>
+  const countLabel = loading
+    ? "Loading"
+    : `${visibleItems.length} ${visibleItems.length === 1 ? "reference" : "references"}`;
 
-        <div className="mx-auto mt-8 max-w-2xl">
-          <TagFilterBar
-            tags={availableTags}
-            selectedTags={selectedTags}
-            onToggleTag={toggleTag}
-            query={query}
-            onQueryChange={setQuery}
-          />
+  return (
+    <>
+      <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-4">
+          <div className="flex items-baseline gap-3">
+            <span className="font-display text-xl leading-none text-ink">Archive</span>
+            <span className="label hidden sm:inline">Design reference</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-opacity hover:opacity-80"
+          >
+            Add reference
+          </button>
+        </div>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6">
+        <section className="border-b border-line pb-10 pt-14 sm:pb-12 sm:pt-20">
+          <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-ink sm:text-7xl">
+            A library of
+            <br />
+            <span className="italic text-accent">borrowed</span> good taste.
+          </h1>
+          <p className="mt-6 max-w-md text-base leading-relaxed text-ink-soft">
+            Screenshots, design language, and ready-to-paste prompts — captured so the next project
+            starts from something considered.
+          </p>
+
+          <div className="mt-10 max-w-xl">
+            <TagFilterBar
+              tags={availableTags}
+              selectedTags={selectedTags}
+              onToggleTag={toggleTag}
+              query={query}
+              onQueryChange={setQuery}
+            />
+          </div>
+        </section>
+
+        <div className="flex items-center justify-between py-5">
+          <span className="label">{countLabel}</span>
+          {selectedTags.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setSelectedTags([])}
+              className="label transition-colors hover:text-ink"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setModalOpen(true)}
-          className="mt-8 rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          + Add inspiration
-        </button>
-      </section>
+        {error && (
+          <p className="mb-6 border-l-2 border-accent pl-4 text-sm text-ink-soft">{error}</p>
+        )}
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-
-      {loading ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading…</p>
-      ) : (
-        <ItemList items={visibleItems} />
-      )}
+        <div className="pb-24">
+          {loading ? (
+            <ul className="divide-y divide-line border-y border-line">
+              {[0, 1, 2].map((i) => (
+                <li key={i} className="flex animate-pulse gap-6 py-7">
+                  <div className="h-32 w-full shrink-0 rounded-sm bg-sunken sm:h-[168px] sm:w-[268px]" />
+                  <div className="hidden flex-1 flex-col gap-3 pt-1 sm:flex">
+                    <div className="h-5 w-2/5 rounded-sm bg-sunken" />
+                    <div className="h-3 w-full rounded-sm bg-sunken" />
+                    <div className="h-3 w-4/5 rounded-sm bg-sunken" />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ItemList items={visibleItems} />
+          )}
+        </div>
+      </main>
 
       <AddItemModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onCreated={(item) => setItems((prev) => [item, ...prev])}
       />
-    </div>
+    </>
   );
 }
