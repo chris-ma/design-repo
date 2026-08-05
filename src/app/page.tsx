@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AddItemModal } from "@/components/AddItemModal";
 import { ItemList } from "@/components/ItemList";
 import { TagFilterBar } from "@/components/TagFilterBar";
-import type { DesignItem, SourcePlatform } from "@/types/item";
+import type { DesignItem } from "@/types/item";
 
 export default function Home() {
   const [items, setItems] = useState<DesignItem[]>([]);
@@ -12,7 +12,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [platform, setPlatform] = useState<SourcePlatform | "all">("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [query, setQuery] = useState("");
 
@@ -24,7 +23,6 @@ export default function Home() {
       setError(null);
 
       const params = new URLSearchParams();
-      if (platform !== "all") params.set("platform", platform);
       if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
 
       try {
@@ -41,7 +39,7 @@ export default function Home() {
 
     loadItems();
     return () => controller.abort();
-  }, [platform, selectedTags]);
+  }, [selectedTags]);
 
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -78,8 +76,6 @@ export default function Home() {
             tags={availableTags}
             selectedTags={selectedTags}
             onToggleTag={toggleTag}
-            platform={platform}
-            onPlatformChange={setPlatform}
             query={query}
             onQueryChange={setQuery}
           />
