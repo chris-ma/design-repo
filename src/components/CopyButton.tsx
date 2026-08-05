@@ -5,7 +5,10 @@ import { useState } from "react";
 export function CopyButton({ text, label = "Copy prompt" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
 
-  async function handleCopy() {
+  async function handleCopy(event: React.MouseEvent<HTMLButtonElement>) {
+    // Safe to nest inside a Link (e.g. a dashboard row) without triggering navigation.
+    event.preventDefault();
+    event.stopPropagation();
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);

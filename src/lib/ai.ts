@@ -8,7 +8,7 @@ const analysisSchema = z.object({
   tags: z
     .array(z.string())
     .describe(
-      "5-10 short tags describing style, industry, layout type, and mood (e.g. 'minimalist', 'saas landing page', 'dark mode', 'brutalist')",
+      "5-10 short tags describing purely visual/structural design language: style, layout type, typography, and mood (e.g. 'minimalist', 'grid layout', 'dark mode', 'brutalist', 'serif headlines'). Do not include the site's industry, product category, or subject matter (e.g. never 'cycling gear', 'fintech', 'skincare') — tags should describe the look, not what the original site sells.",
     ),
   colorPalette: z
     .array(z.string())
@@ -79,6 +79,7 @@ export async function analyzeScreenshot({
               contextLines.join("\n"),
               "",
               "Analyze the visual design in the screenshot and produce a title, tags, dominant color palette, and a replication prompt suitable for pasting directly into an AI coding tool to rebuild a similar look and feel.",
+              "Focus entirely on transferable visual design language — layout, typography, color, imagery style, spacing, mood — not on the industry, product, or subject matter of the original site. The goal is a reusable style reference, not a description of what the site is about.",
             ].join("\n"),
           },
         ],

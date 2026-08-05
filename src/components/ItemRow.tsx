@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { DesignItem } from "@/types/item";
+import { CopyButton } from "./CopyButton";
 
 const PLATFORM_STYLES: Record<string, string> = {
   dribbble: "bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-300",
@@ -58,7 +59,10 @@ export function ItemRow({ item }: { item: DesignItem }) {
         )}
 
         {item.replicationPrompt && (
-          <p className="line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">{item.replicationPrompt}</p>
+          <div className="flex items-start justify-between gap-3">
+            <p className="line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">{item.replicationPrompt}</p>
+            <CopyButton text={item.replicationPrompt} label="Copy" />
+          </div>
         )}
 
         {item.colorPalette.length > 0 && (
