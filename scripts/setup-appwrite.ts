@@ -6,6 +6,8 @@ const API_KEY = requireEnv("APPWRITE_API_KEY");
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || "design-inspo-db";
 const COLLECTION_ID = process.env.APPWRITE_ITEMS_COLLECTION_ID || "items";
 const BUCKET_ID = process.env.APPWRITE_SCREENSHOTS_BUCKET_ID || "screenshots";
+// MariaDB/InnoDB index prefix limit is 767 bytes; source_url is utf8mb4 (4 bytes/char).
+const SOURCE_URL_INDEX_LENGTH = 191;
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -156,7 +158,15 @@ async function main() {
     {
       key: "idx_source_url",
       create: () =>
-        databases.createIndex(DATABASE_ID, COLLECTION_ID, "idx_source_url", DatabasesIndexType.Key, ["source_url"]),
+        databases.createIndex(
+          DATABASE_ID,
+          COLLECTION_ID,
+          "idx_source_url",
+          DatabasesIndexType.Key,
+          ["source_url"],
+          undefined,
+          [SOURCE_URL_INDEX_LENGTH],
+        ),
     },
     {
       key: "idx_content_hash",
