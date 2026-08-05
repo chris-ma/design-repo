@@ -2,8 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import type { DesignItem } from "@/types/item";
 import { CopyButton } from "./CopyButton";
+import { RegenerateButton } from "./RegenerateButton";
 
-export function ItemRow({ item, index }: { item: DesignItem; index: number }) {
+export function ItemRow({
+  item,
+  index,
+  onUpdated,
+}: {
+  item: DesignItem;
+  index: number;
+  onUpdated?: (item: DesignItem) => void;
+}) {
   const notes = [item.description, item.replicationPrompt].filter(Boolean).join("\n\n");
 
   return (
@@ -35,8 +44,13 @@ export function ItemRow({ item, index }: { item: DesignItem; index: number }) {
             <span className="label shrink-0">{item.sourceUrl ? item.sourcePlatform : "uploaded"}</span>
           </div>
 
-          {notes && (
+          {notes ? (
             <p className="line-clamp-2 max-w-prose text-sm leading-relaxed text-ink-soft">{notes}</p>
+          ) : (
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-sm text-ink-faint">No breakdown was generated for this one.</p>
+              <RegenerateButton id={item.id} label="Generate breakdown" onUpdated={onUpdated} />
+            </div>
           )}
 
           <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-3 pt-1">

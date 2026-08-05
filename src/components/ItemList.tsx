@@ -1,7 +1,13 @@
 import type { DesignItem } from "@/types/item";
 import { ItemRow } from "./ItemRow";
 
-export function ItemList({ items }: { items: DesignItem[] }) {
+export function ItemList({
+  items,
+  onItemUpdated,
+}: {
+  items: DesignItem[];
+  onItemUpdated?: (item: DesignItem) => void;
+}) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 border-y border-line py-28 text-center">
@@ -17,7 +23,7 @@ export function ItemList({ items }: { items: DesignItem[] }) {
   return (
     <ul className="divide-y divide-line border-y border-line">
       {items.map((item, index) => (
-        <ItemRow key={item.id} item={item} index={index} />
+        <ItemRow key={item.id} item={item} index={index} onUpdated={onItemUpdated} />
       ))}
     </ul>
   );

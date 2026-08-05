@@ -7,6 +7,7 @@ import { appwriteConfig } from "@/lib/appwrite/config";
 import { mapDocumentToItem, type ItemDocument } from "@/lib/items";
 import { CopyButton } from "@/components/CopyButton";
 import { DeleteItemButton } from "@/components/DeleteItemButton";
+import { RegenerateButton } from "@/components/RegenerateButton";
 
 export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -70,9 +71,12 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
 
         <div className="grid gap-10 border-t border-line pt-10 lg:grid-cols-[1fr_220px] lg:gap-14">
           <section className="flex min-w-0 flex-col gap-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="label">Design notes</h2>
-              <CopyButton text={notes} label="Copy notes" />
+              <div className="flex items-center gap-3">
+                <RegenerateButton id={item.id} label={notes ? "Regenerate" : "Generate breakdown"} />
+                {notes && <CopyButton text={notes} label="Copy notes" />}
+              </div>
             </div>
 
             {item.description && (
@@ -81,9 +85,17 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
               </p>
             )}
 
-            <pre className="mt-1 max-h-96 overflow-auto whitespace-pre-wrap rounded-sm bg-sunken p-5 font-mono text-[0.8125rem] leading-relaxed text-ink ring-1 ring-line">
-              {item.replicationPrompt || "No prompt generated yet."}
-            </pre>
+            {notes ? (
+              <pre className="mt-1 max-h-96 overflow-auto whitespace-pre-wrap rounded-sm bg-sunken p-5 font-mono text-[0.8125rem] leading-relaxed text-ink ring-1 ring-line">
+                {item.replicationPrompt || "No prompt generated yet."}
+              </pre>
+            ) : (
+              <p className="text-sm leading-relaxed text-ink-faint">
+                The AI breakdown for this one came back empty — usually a hiccup during upload.
+                Generating it again will read the saved screenshot and write fresh notes, tags and a
+                palette.
+              </p>
+            )}
           </section>
 
           <aside className="flex flex-col gap-8">

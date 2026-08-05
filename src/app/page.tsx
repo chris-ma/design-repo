@@ -61,6 +61,10 @@ export default function Home() {
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
   }
 
+  function replaceItem(updated: DesignItem) {
+    setItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+  }
+
   const countLabel = loading
     ? "Loading"
     : `${visibleItems.length} ${visibleItems.length === 1 ? "reference" : "references"}`;
@@ -138,7 +142,7 @@ export default function Home() {
               ))}
             </ul>
           ) : (
-            <ItemList items={visibleItems} />
+            <ItemList items={visibleItems} onItemUpdated={replaceItem} />
           )}
         </div>
       </main>

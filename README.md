@@ -58,6 +58,7 @@ Pinterest and similar sites may require login or serve a stripped-down page to a
 2. The server launches headless Chromium, navigates to the page, scrolls to trigger lazy-loaded images, and takes a screenshot.
 3. The screenshot is sent to Claude, which returns a title, tags, a dominant color palette, and a replication prompt as structured JSON.
 4. The screenshot is uploaded to Appwrite Storage; the item (with tags/prompt) is saved to Appwrite Database. If the AI step fails, the screenshot is still saved so nothing is lost — the item is created with empty tags/prompt and a warning is returned.
+5. Those empty items can be recovered later: both the dashboard row and the item page expose a **Generate breakdown** button that re-reads the saved screenshot and re-runs the analysis (`POST /api/items/[id]/reanalyze`). The same button appears as **Regenerate** on items that already have a breakdown, if you want a fresh one.
 
 **From an uploaded image:** same as above, but skips the Chromium/screenshot step entirely — the uploaded PNG/JPEG (max 4MB, to stay under Vercel's serverless request body limit) goes straight to Claude for analysis. You can optionally attach a source link for attribution; without one, the item shows as "Uploaded" with no source URL.
 
