@@ -107,6 +107,10 @@ async function main() {
       create: () => databases.createStringAttribute(DATABASE_ID, COLLECTION_ID, "screenshot_file_id", 100, true),
     },
     {
+      key: "content_hash",
+      create: () => databases.createStringAttribute(DATABASE_ID, COLLECTION_ID, "content_hash", 64, false),
+    },
+    {
       key: "tags",
       create: () => databases.createStringAttribute(DATABASE_ID, COLLECTION_ID, "tags", 100, false, undefined, true),
     },
@@ -148,6 +152,18 @@ async function main() {
     {
       key: "idx_tags",
       create: () => databases.createIndex(DATABASE_ID, COLLECTION_ID, "idx_tags", DatabasesIndexType.Key, ["tags"]),
+    },
+    {
+      key: "idx_source_url",
+      create: () =>
+        databases.createIndex(DATABASE_ID, COLLECTION_ID, "idx_source_url", DatabasesIndexType.Key, ["source_url"]),
+    },
+    {
+      key: "idx_content_hash",
+      create: () =>
+        databases.createIndex(DATABASE_ID, COLLECTION_ID, "idx_content_hash", DatabasesIndexType.Key, [
+          "content_hash",
+        ]),
     },
   ];
 

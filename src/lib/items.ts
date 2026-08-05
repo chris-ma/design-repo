@@ -48,6 +48,7 @@ export interface ItemDocument extends Models.Document {
   title: string;
   description: string;
   screenshot_file_id: string;
+  content_hash: string;
   tags: string[];
   replication_prompt: string;
   color_palette: string[];

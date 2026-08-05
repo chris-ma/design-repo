@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { ID, Query } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,6 +18,16 @@ const ALLOWED_UPLOAD_TYPES: Record<string, "image/png" | "image/jpeg"> = {
   "image/jpg": "image/jpeg",
 };
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // stays under Vercel's serverless request body limit
+
+async function findExistingItem(field: "source_url" | "content_hash", value: string) {
+  if (!value) return null;
+  const result = await getDatabases().listDocuments<ItemDocument>(
+    appwriteConfig.databaseId,
+    appwriteConfig.itemsCollectionId,
+    [Query.equal(field, value), Query.limit(1)],
+  );
+  return result.documents[0] ?? null;
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -71,6 +82,11 @@ async function handleUrlSubmission(request: NextRequest) {
   }
 
   const sourcePlatform = deriveSourcePlatform(url);
+
+  const existingByUrl = await findExistingItem("source_url", url.toString());
+  if (existingByUrl) {
+    return NextResponse.json({ error: "This URL has already been added." }, { status: 409 });
+  }
 
   let capture;
   try {
@@ -161,6 +177,20 @@ async function createItemRecord({
   pageTitle?: string;
   pageDescription?: string;
 }) {
+  const contentHash = createHash("sha256").update(screenshot).digest("hex");
+
+  if (sourceUrl) {
+    const existingByUrl = await findExistingItem("source_url", sourceUrl);
+    if (existingByUrl) {
+      return NextResponse.json({ error: "This URL has already been added." }, { status: 409 });
+    }
+  }
+
+  const existingByHash = await findExistingItem("content_hash", contentHash);
+  if (existingByHash) {
+    return NextResponse.json({ error: "This exact image has already been added." }, { status: 409 });
+  }
+
   let analysis;
   let warning: string | undefined;
   try {
@@ -201,6 +231,7 @@ async function createItemRecord({
       title: analysis.title || pageTitle || "Untitled inspiration",
       description: analysis.description,
       screenshot_file_id: uploadedFile.$id,
+      content_hash: contentHash,
       tags: analysis.tags,
       replication_prompt: analysis.replicationPrompt,
       color_palette: analysis.colorPalette,
