@@ -38,10 +38,15 @@ export function ItemRow({ item }: { item: DesignItem }) {
           </div>
         </div>
 
-        {item.description && (
+        {(item.description || item.replicationPrompt) && (
           <div className="flex items-start justify-between gap-3">
-            <p className="line-clamp-3 text-sm text-zinc-600 dark:text-zinc-300">{item.description}</p>
-            <CopyButton text={item.description} label="Copy" />
+            <p className="line-clamp-3 text-sm text-zinc-600 dark:text-zinc-300">
+              {item.description || item.replicationPrompt}
+            </p>
+            <CopyButton
+              text={[item.description, item.replicationPrompt].filter(Boolean).join("\n\n")}
+              label="Copy"
+            />
           </div>
         )}
 
@@ -55,13 +60,6 @@ export function ItemRow({ item }: { item: DesignItem }) {
                 {tag}
               </span>
             ))}
-          </div>
-        )}
-
-        {item.replicationPrompt && (
-          <div className="flex items-start justify-between gap-3">
-            <p className="line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">{item.replicationPrompt}</p>
-            <CopyButton text={item.replicationPrompt} label="Copy" />
           </div>
         )}
 

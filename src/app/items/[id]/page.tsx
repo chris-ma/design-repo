@@ -62,16 +62,6 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         <DeleteItemButton id={item.id} />
       </div>
 
-      {item.description && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</h2>
-            <CopyButton text={item.description} />
-          </div>
-          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{item.description}</p>
-        </div>
-      )}
-
       {item.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {item.tags.map((tag) => (
@@ -101,9 +91,12 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Replication prompt</h2>
-          <CopyButton text={item.replicationPrompt} />
+          <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Design notes</h2>
+          <CopyButton text={[item.description, item.replicationPrompt].filter(Boolean).join("\n\n")} />
         </div>
+        {item.description && (
+          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{item.description}</p>
+        )}
         <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-zinc-100 p-4 font-mono text-sm text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
           {item.replicationPrompt || "No prompt generated yet."}
         </pre>
